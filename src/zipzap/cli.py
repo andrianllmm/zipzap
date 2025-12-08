@@ -30,11 +30,11 @@ console = Console()
 def zip(
     input_file: str,
     output_file: str = typer.Option(None, "--output", "-o"),
-    show_stats: bool = typer.Option(True, "--stats", help="Show file stats"),
     show_time: bool = typer.Option(False, "--time", help="Show encode/write timing"),
     show_contents: bool = typer.Option(False, "--contents", help="Show file contents"),
     show_freq: bool = typer.Option(False, "--freq", help="Show frequency table"),
     show_tree: bool = typer.Option(False, "--tree", help="Show Huffman tree"),
+    pager: bool = typer.Option(True, " /--no-pager", help="Use a pager to view output"),
 ):
     """Compress a text file into a .zz file."""
 
@@ -68,9 +68,8 @@ def zip(
         writer.write(FreqCounter(text), encoded)
 
     show_success(console, output_path, "Zipped!")
+    console.print(file_stats(input_path, output_path))
 
-    if show_stats:
-        console.print(file_stats(input_path, output_path))
     if show_time:
         console.print(time_stats(encode_timer, write_timer))
     if show_contents:
@@ -78,26 +77,31 @@ def zip(
         console.print(file_content(str(encoded), "Encoded Bits", output_path.name))
     if show_freq:
         table = frequency_table(encoder.freq_table)
-        with console.pager(styles=True):
+        if pager:
+            with console.pager(styles=True):
+                console.print(table)
+        else:
             console.print(table)
     if show_tree:
-        with console.pager(styles=True):
-            console.print(
-                huffman_tree_diagram(
-                    HuffmanTreeBuilder.from_freq_table(encoder.freq_table)
-                )
-            )
+        tree_diagram = huffman_tree_diagram(
+            HuffmanTreeBuilder.from_freq_table(encoder.freq_table)
+        )
+        if pager:
+            with console.pager(styles=True):
+                console.print(tree_diagram)
+        else:
+            console.print(tree_diagram)
 
 
 @app.command()
 def zap(
     input_file: str,
     output_file: str = typer.Option(None, "--output", "-o"),
-    show_stats: bool = typer.Option(True, "--stats", help="Show file stats"),
     show_time: bool = typer.Option(False, "--time", help="Show encode/write timing"),
     show_contents: bool = typer.Option(False, "--contents", help="Show file contents"),
     show_freq: bool = typer.Option(False, "--freq", help="Show frequency table"),
     show_tree: bool = typer.Option(False, "--tree", help="Show Huffman tree"),
+    pager: bool = typer.Option(True, " /--no-pager", help="Use a pager to view output"),
 ):
     """Decompress a .zz file into a text file."""
 
@@ -128,9 +132,8 @@ def zap(
     output_path.write_text(decoded, encoding="utf-8")
 
     show_success(console, output_path, "Zapped!")
+    console.print(file_stats(input_path, output_path))
 
-    if show_stats:
-        console.print(file_stats(input_path, output_path))
     if show_time:
         console.print(time_stats(read_timer, decode_timer))
     if show_contents:
@@ -138,15 +141,20 @@ def zap(
         console.print(file_content(decoded, "Decoded Text", output_path.name))
     if show_freq:
         table = frequency_table(decoder.freq_table)
-        with console.pager(styles=True):
+        if pager:
+            with console.pager(styles=True):
+                console.print(table)
+        else:
             console.print(table)
     if show_tree:
-        with console.pager(styles=True):
-            console.print(
-                huffman_tree_diagram(
-                    HuffmanTreeBuilder.from_freq_table(decoder.freq_table)
-                )
-            )
+        tree_diagram = huffman_tree_diagram(
+            HuffmanTreeBuilder.from_freq_table(decoder.freq_table)
+        )
+        if pager:
+            with console.pager(styles=True):
+                console.print(tree_diagram)
+        else:
+            console.print(tree_diagram)
 
 
 def main():
