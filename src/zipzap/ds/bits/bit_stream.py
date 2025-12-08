@@ -109,12 +109,13 @@ class BitStream:
 
     def __hash__(self) -> int:
         """Compute a hash based on the bits in the BitStream."""
-        return hash(tuple(self))
+        return hash((bytes(self._bytes), self._bit_len))
 
     def __str__(self) -> str:
-        """Return a string representation of the bits (e.g., '1010')."""
-        return "".join(str(b) for b in self)
+        full_bytes = [format(b, "08b") for b in self._bytes]
+        s = "".join(full_bytes)
+        return s[: self._bit_len]  # trim extra bits
 
     def __repr__(self) -> str:
         """Return a detailed string representation for debugging."""
-        return f"{self.__class__.__name__}({str(self)})"
+        return f"{self.__class__.__name__}(bytes={self._bytes!r}, bit_len={self._bit_len!r})"
