@@ -13,27 +13,21 @@ class ZzWriter:
         # Ensure file exists and parent directories exist
         self.file_path.parent.mkdir(parents=True, exist_ok=True)
 
-    def write(self, freq_table: Map[str, int], encoded: BitStream) -> None:
+    def write(self, encoded: BitStream, code_lengths: Map[str, int]) -> None:
         data = encoded.to_bytearray()
         bit_len = len(encoded)
 
         with self.file_path.open("wb") as f:
-            # Number of unique characters
-            f.write(len(freq_table).to_bytes(ZzConfig.NUM_CHARS_SIZE, "big"))
+            # Write number of unique characters
+            f.write(len(code_lengths).to_bytes(ZzConfig.NUM_CHARS_SIZE, "big"))
 
-            # Write frequency table
-            for char, freq in freq_table.entries():
+            # Write code lengths
+            for char, code_len in code_lengths.entries():
                 char_bytes = char.encode("utf-8")
-                char_len = len(char_bytes)
-                if char_len > 65535:
-                    raise ValueError(f"Character too long to encode: {char}")
-
-                f.write(char_len.to_bytes(ZzConfig.CHAR_LEN_SIZE, "big"))
+                f.write(len(char_bytes).to_bytes(ZzConfig.CHAR_LEN_SIZE, "big"))
                 f.write(char_bytes)
-                f.write(freq.to_bytes(ZzConfig.FREQ_SIZE, "big"))
+                f.write(code_len.to_bytes(ZzConfig.CODE_LEN_SIZE, "big"))
 
-            # Write bit length of encoded data
+            # Write bit length and encoded data
             f.write(bit_len.to_bytes(ZzConfig.BIT_LEN_SIZE, "big"))
-
-            # Write encoded bytes
             f.write(data)

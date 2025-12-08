@@ -72,18 +72,28 @@ def file_content(
     return Panel(syntax, title=panel_title, expand=False)
 
 
-def frequency_table(freq_table: Map[str, int]) -> Table:
-    """Create a Rich Table showing the character frequency."""
+def codebook_table(
+    codebook: Map[str, BitStream], freq_table: Optional[Map[str, int]] = None
+) -> Table:
+    """Create a Rich Table showing the codebook."""
 
-    table = Table(title="Character Frequency & Huffman Codes")
-
+    table = Table(title="Codebook")
     table.add_column("Character", justify="center")
-    table.add_column("Frequency", justify="right")
+    table.add_column("Code", justify="right")
+    if freq_table is not None:
+        table.add_column("Frequency", justify="left")
 
-    sorted_entries = sorted(freq_table.entries(), key=lambda x: x.value, reverse=True)
+    # Sort by canonical code (BitStream as string)
+    sorted_entries = sorted(codebook.entries(), key=lambda x: str(x.value))
 
-    for char, freq in sorted_entries:
-        table.add_row(repr(char), str(freq))
+    for entry in sorted_entries:
+        char = entry.key
+        code = entry.value
+        row = [repr(char), str(code)]
+        if freq_table is not None:
+            freq = freq_table.get(char) or 0
+            row.append(str(freq))
+        table.add_row(*row)
 
     return table
 

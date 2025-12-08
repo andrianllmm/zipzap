@@ -9,9 +9,8 @@ def test_empty_string_encoding_decoding():
 
     assert len(encoded) == 0
     assert len(encoder.codebook) == 0
-    assert len(encoder.freq_table) == 0
 
-    decoder = HuffmanDecoder(encoder.freq_table)
+    decoder = HuffmanDecoder(encoder.code_lengths)
     decoded = decoder.decode(encoded)
     assert decoded == ""
 
@@ -22,13 +21,12 @@ def test_single_character_string():
     encoded = encoder.encode(text)
 
     assert len(encoder.codebook) == 1
-    assert len(encoder.freq_table) == 1
 
     # Encoding of single char should be "0"
     assert encoded == BitStream("0")
     assert encoder.codebook.get("a") == BitStream("0")
 
-    decoder = HuffmanDecoder(encoder.freq_table)
+    decoder = HuffmanDecoder(encoder.code_lengths)
     decoded = decoder.decode(encoded)
     assert decoded == text
 
@@ -39,14 +37,13 @@ def test_repeated_characters():
     encoded = encoder.encode(text)
 
     assert len(encoder.codebook) == 1
-    assert len(encoder.freq_table) == 1
 
     # Encoding repeated character should be consistent
     code = encoder.codebook.get("a")
     assert code is not None
     assert encoded == BitStream(str(code) * len(text))
 
-    decoder = HuffmanDecoder(encoder.freq_table)
+    decoder = HuffmanDecoder(encoder.code_lengths)
     decoded = decoder.decode(encoded)
     assert decoded == text
 
@@ -60,7 +57,7 @@ def test_multiple_unique_characters():
     for c in text:
         assert encoder.codebook.get(c) is not None
 
-    decoder = HuffmanDecoder(encoder.freq_table)
+    decoder = HuffmanDecoder(encoder.code_lengths)
     decoded = decoder.decode(encoded)
     assert decoded == text
 
@@ -70,7 +67,7 @@ def test_normal_text():
     encoder = HuffmanEncoder(text)
     encoded = encoder.encode(text)
 
-    decoder = HuffmanDecoder(encoder.freq_table)
+    decoder = HuffmanDecoder(encoder.code_lengths)
     decoded = decoder.decode(encoded)
     assert decoded == text
 
@@ -80,7 +77,7 @@ def test_non_alpha():
     encoder = HuffmanEncoder(text)
     encoded = encoder.encode(text)
 
-    decoder = HuffmanDecoder(encoder.freq_table)
+    decoder = HuffmanDecoder(encoder.code_lengths)
     decoded = decoder.decode(encoded)
 
     assert decoded == text
@@ -91,7 +88,7 @@ def test_unicode():
     encoder = HuffmanEncoder(text)
     encoded = encoder.encode(text)
 
-    decoder = HuffmanDecoder(encoder.freq_table)
+    decoder = HuffmanDecoder(encoder.code_lengths)
     decoded = decoder.decode(encoded)
 
     assert decoded == text
@@ -102,7 +99,7 @@ def test_repeated_long_text():
     encoder = HuffmanEncoder(text)
     encoded = encoder.encode(text)
 
-    decoder = HuffmanDecoder(encoder.freq_table)
+    decoder = HuffmanDecoder(encoder.code_lengths)
     decoded = decoder.decode(encoded)
 
     assert decoded == text
@@ -115,7 +112,7 @@ def test_long_text():
     encoder = HuffmanEncoder(text)
     encoded = encoder.encode(text)
 
-    decoder = HuffmanDecoder(encoder.freq_table)
+    decoder = HuffmanDecoder(encoder.code_lengths)
     decoded = decoder.decode(encoded)
 
     assert decoded == text
@@ -129,9 +126,9 @@ def test_consistency_multiple_encodes():
     encoder2 = HuffmanEncoder(text)
     encoded2 = encoder2.encode(text)
 
-    decoder1 = HuffmanDecoder(encoder1.freq_table)
+    decoder1 = HuffmanDecoder(encoder1.code_lengths)
     decoded1 = decoder1.decode(encoded1)
-    decoder2 = HuffmanDecoder(encoder2.freq_table)
+    decoder2 = HuffmanDecoder(encoder2.code_lengths)
     decoded2 = decoder2.decode(encoded2)
 
     # Decoded result must match (though codebooks may differ)
