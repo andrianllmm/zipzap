@@ -14,6 +14,8 @@ class HuffmanNode:
         self.char = char  # None for internal nodes
 
     def __lt__(self, other: "HuffmanNode"):
+        if self.freq == other.freq:
+            return (self.char or "") < (other.char or "")
         return self.freq < other.freq
 
 
