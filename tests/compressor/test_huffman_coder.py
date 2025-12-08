@@ -75,6 +75,52 @@ def test_normal_text():
     assert decoded == text
 
 
+def test_non_alpha():
+    text = "1!!!!!@@@@###$$%^^&&&****()[]{}<>-_=+;:'\",./?!"
+    encoder = HuffmanEncoder(text)
+    encoded = encoder.encode(text)
+
+    decoder = HuffmanDecoder(encoder.freq_table)
+    decoded = decoder.decode(encoded)
+
+    assert decoded == text
+
+
+def test_unicode():
+    text = "😀😁😂🤣😃😄😅😆😉😊😋😎😍😘🥰😗😙😚"
+    encoder = HuffmanEncoder(text)
+    encoded = encoder.encode(text)
+
+    decoder = HuffmanDecoder(encoder.freq_table)
+    decoded = decoder.decode(encoded)
+
+    assert decoded == text
+
+
+def test_repeated_long_text():
+    text = "this is a huffman test " * 1_000
+    encoder = HuffmanEncoder(text)
+    encoded = encoder.encode(text)
+
+    decoder = HuffmanDecoder(encoder.freq_table)
+    decoded = decoder.decode(encoded)
+
+    assert decoded == text
+
+
+def test_long_text():
+    with open("test_data/alice_wonderland.txt", "r") as f:
+        text = f.read()
+
+    encoder = HuffmanEncoder(text)
+    encoded = encoder.encode(text)
+
+    decoder = HuffmanDecoder(encoder.freq_table)
+    decoded = decoder.decode(encoded)
+
+    assert decoded == text
+
+
 def test_consistency_multiple_encodes():
     text = "this is a huffman test"
 

@@ -68,6 +68,13 @@ class BitStream:
         bs._bit_len = len(data) * 8 if bit_length is None else bit_length
         return bs
 
+    def copy(self) -> "BitStream":
+        """Return a new BitStream with the same bits."""
+        new_bs = BitStream()
+        new_bs._bytes = self._bytes.copy()
+        new_bs._bit_len = self._bit_len
+        return new_bs
+
     def __len__(self) -> int:
         """Return the total number of bits in the BitStream."""
         return self._bit_len

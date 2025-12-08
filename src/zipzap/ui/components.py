@@ -72,24 +72,18 @@ def file_content(
     return Panel(syntax, title=panel_title, expand=False)
 
 
-def codebook_table(codebook: Map[str, BitStream], freq_table: Map[str, int]) -> Table:
-    """Create a Rich Table showing the character frequency and Huffman codes."""
+def frequency_table(freq_table: Map[str, int]) -> Table:
+    """Create a Rich Table showing the character frequency."""
 
     table = Table(title="Character Frequency & Huffman Codes")
 
     table.add_column("Character", justify="center")
     table.add_column("Frequency", justify="right")
-    table.add_column("Code", justify="left")
 
-    # Combine character, frequency, and code into a list
-    combined = []
-    for char, code in codebook.entries():
-        combined.append((char, freq_table.get(char) or 0, code))
-    # Sort by frequency
-    combined.sort(key=lambda x: x[1], reverse=True)
+    sorted_entries = sorted(freq_table.entries(), key=lambda x: x.value, reverse=True)
 
-    for char, freq, code in combined:
-        table.add_row(repr(char), str(freq), str(code))
+    for char, freq in sorted_entries:
+        table.add_row(repr(char), str(freq))
 
     return table
 

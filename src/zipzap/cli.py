@@ -9,7 +9,7 @@ from zipzap.compressor.huffman_tree import HuffmanTreeBuilder
 from zipzap.io.reader import ZzReader
 from zipzap.io.writer import ZzWriter
 from zipzap.ui.components import (
-    codebook_table,
+    frequency_table,
     file_content,
     file_stats,
     huffman_tree_diagram,
@@ -33,7 +33,7 @@ def zip(
     show_stats: bool = typer.Option(True, "--stats", help="Show file stats"),
     show_time: bool = typer.Option(False, "--time", help="Show encode/write timing"),
     show_contents: bool = typer.Option(False, "--contents", help="Show file contents"),
-    show_codebook: bool = typer.Option(False, "--codebook", help="Show codebook table"),
+    show_freq: bool = typer.Option(False, "--freq", help="Show frequency table"),
     show_tree: bool = typer.Option(False, "--tree", help="Show Huffman tree"),
 ):
     """Compress a text file into a .zz file."""
@@ -76,8 +76,8 @@ def zip(
     if show_contents:
         console.print(file_content(text, "Original Text", input_path.name))
         console.print(file_content(str(encoded), "Encoded Bits", output_path.name))
-    if show_codebook:
-        table = codebook_table(encoder.codebook, encoder.freq_table)
+    if show_freq:
+        table = frequency_table(encoder.freq_table)
         with console.pager(styles=True):
             console.print(table)
     if show_tree:
@@ -96,7 +96,7 @@ def zap(
     show_stats: bool = typer.Option(True, "--stats", help="Show file stats"),
     show_time: bool = typer.Option(False, "--time", help="Show encode/write timing"),
     show_contents: bool = typer.Option(False, "--contents", help="Show file contents"),
-    show_codebook: bool = typer.Option(False, "--codebook", help="Show codebook table"),
+    show_freq: bool = typer.Option(False, "--freq", help="Show frequency table"),
     show_tree: bool = typer.Option(False, "--tree", help="Show Huffman tree"),
 ):
     """Decompress a .zz file into a text file."""
@@ -136,8 +136,8 @@ def zap(
     if show_contents:
         console.print(file_content(str(encoded), "Encoded Bits", input_path.name))
         console.print(file_content(decoded, "Decoded Text", output_path.name))
-    if show_codebook:
-        table = codebook_table(decoder.codebook, decoder.freq_table)
+    if show_freq:
+        table = frequency_table(decoder.freq_table)
         with console.pager(styles=True):
             console.print(table)
     if show_tree:
