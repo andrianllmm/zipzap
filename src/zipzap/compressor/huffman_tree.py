@@ -7,7 +7,7 @@ from zipzap.ds.trees.linked_binary_tree import LinkedBinaryTree
 
 
 class HuffmanNode:
-    """Node class for HuffmanTree."""
+    __slots__ = ("freq", "char")
 
     def __init__(self, freq: int, char: Optional[str] = None):
         self.freq = freq

@@ -9,6 +9,8 @@ T = TypeVar("T")
 class BTNode(Generic[T]):
     """Node class for LinkedBinaryTree."""
 
+    __slots__ = ("_element", "_parent", "_left", "_right")
+
     def __init__(
         self,
         element: T,
@@ -24,6 +26,8 @@ class BTNode(Generic[T]):
 
 class BTPosition(Position, Generic[T]):
     """Position class for LinkedBinaryTree."""
+
+    __slots__ = ("_container", "_node")
 
     def __init__(self, container: "LinkedBinaryTree", node: "BTNode"):
         self._container = container
