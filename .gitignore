@@ -1,3 +1,10 @@
+# ZipZap compressed files
+test_data/*.zz
+
+# ZipZap decoded files
+test_data/*_decoded.*
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
