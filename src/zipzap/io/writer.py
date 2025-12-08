@@ -25,7 +25,7 @@ class ZzWriter:
             for char, freq in freq_table.entries():
                 char_bytes = char.encode("utf-8")
                 char_len = len(char_bytes)
-                if char_len > 255:
+                if char_len > 65535:
                     raise ValueError(f"Character too long to encode: {char}")
 
                 f.write(char_len.to_bytes(ZzConfig.CHAR_LEN_SIZE, "big"))
